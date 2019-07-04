@@ -7,17 +7,17 @@ def main():
         argument_spec = dict(
             token=dict(type='str', required=True),
             domain=dict(type='str', required=True),
-            state=dict(required=False, choises=['present', 'absent'], default='present'),
-            group=dict(type='str', required=True),
+            action=dict(required=True, choises=['create_group', 'add_members']),
             description=dict(type='str', required=True),
-#            members=dict(required=False, type='dict', default={})
+            group=dict(type='str', required=True),
+            members=dict(required=False, type='list', default=[])
         )
     )
 
-    if module.params['state'] == 'present':
+    if module.params['action'] == 'create_group':
         create_group(module)
-    elif module.params['state'] == 'absent':
-        delete_group(module)
+    elif module.params['action'] == 'add_members':
+        add_members(module)
 
 def create_group(module):      
     url = module.params['domain'] + "/groups"
@@ -28,11 +28,26 @@ def create_group(module):
         'authorization': module.params['token']
     }    
     
-    response = requests.request("POST", url, data=payload, headers=headers)
-    
-    module.fail_json(msg='You requested this to fail')
-    module.exit_json(msg='You requested this to success')
+    r = requests.request("POST", url, data=payload, headers=headers)    
 
+    if r.status_code == 200:
+        return module.exit_json(changed=False, meta=r.json())
+    else:
+        return module.fail_json(msg=r.json())
+
+def add_members(module):      
+    url = module.params['domain'] + "/groups" + "id_" + "/members"
+    print(module.params['members'])
+    payload = ('['+ str(module.params['members']) +']')
+
+    headers = {
+        'Content-type': 'application/json',
+        'authorization': module.params['token']
+    }    
+    
+    r = requests.request("PATCH", url, data=payload, headers=headers)    
+
+    return module.fail_json(msg=r.json())
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.urls import *
