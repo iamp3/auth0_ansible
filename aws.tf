@@ -1,31 +1,18 @@
-terraform {
-  backend "s3" {
-    bucket = "lod-tfstate-bucket"    
-    key    = "terraform.tfstate"
-    shared_credentials_file = "~/.aws/credentials"
-    profile = "lod"
-    region = "us-east-1"
-  }
-}
-
 provider "aws" {
   shared_credentials_file = "~/.aws/credentials"
   profile = "lod"
   region = "us-east-1"
 }
-resource "aws_iam_user" "auth0" {
-  name = "auth0-user"
-}
 
 ## SAML provider 
-resource "aws_iam_saml_provider" "auth0" {
-  name                   = "auth0"
+resource "aws_iam_saml_provider" "auth0_dev" {
+  name                   = "auth0_dev"
   saml_metadata_document = "${file("saml-metadata.xml")}"
 }
 
 ## IAM Role
-resource "aws_iam_role" "auth0" {
-  name = "auth0_role"
+resource "aws_iam_role" "auth0_dev" {
+  name = "aws_auth0_role_dev"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -33,7 +20,7 @@ resource "aws_iam_role" "auth0" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "${aws_iam_saml_provider.auth0.arn}"
+        "Federated": "${aws_iam_saml_provider.auth0_dev.arn}"
       },
       "Action": "sts:AssumeRoleWithSAML",
       "Condition": {
@@ -47,9 +34,9 @@ resource "aws_iam_role" "auth0" {
 EOF
 }
 
-resource "aws_iam_policy" "auth0" {
-  name        = "auth0-policy"
-  description = "auth0-policy"
+resource "aws_iam_policy" "auth0_dev" {
+  name        = "auth0-policy-dev"
+  description = "auth0-policy-dev"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -71,9 +58,10 @@ resource "aws_iam_policy" "auth0" {
 EOF
 }
 
-resource "aws_iam_policy_attachment" "auth0-attach" {
-  name       = "auth0-attachment"
-  users      = ["${aws_iam_user.auth0.name}"]
-  roles      = ["${aws_iam_role.auth0.name}"]
-  policy_arn = "${aws_iam_policy.auth0.arn}"
+resource "aws_iam_policy_attachment" "auth0-attach-dev" {
+  name       = "auth0-attachment-dev"
+  roles      = ["${aws_iam_role.auth0_dev.name}"]
+  policy_arn = "${aws_iam_policy.auth0_dev.arn}"
 }
+
+

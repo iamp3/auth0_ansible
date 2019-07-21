@@ -1,0 +1,5 @@
+members:
+  - member: [ "google-oauth2|117698657903474287728", "google-oauth2|108949271768589669997", "auth0|5d344651a7677a0d0cb614be" ]
+    group: auth0_role_dev
+  # - member: [ "auth0|5d237a340778c00e56bb67d0", "auth0|5d2225ec7540480e235ce91b" ]
+  #   group: dev
