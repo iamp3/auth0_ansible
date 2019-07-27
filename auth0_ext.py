@@ -18,11 +18,11 @@ def main():
     if module.params['state'] == 'present':
        create_group(module)
     elif module.params['state'] == 'absent':
-        delete_group(module)
+        delete_members(module)
 
 def get_token(module):
     
-    global bearer_token
+    global bearer_token, users_ids
     token_url = module.params['domain_main'] + "/oauth/token"
     payload = ('{ "client_id":"' + str(module.params['client_id']) + '","client_secret":"' + str(module.params['client_secret']) + '","audience":"urn:auth0-authz-api","grant_type":"client_credentials" }')
 
@@ -42,10 +42,10 @@ def get_token(module):
     }  
 
     users_r = requests.request("GET", users_url, headers=headers_users)
-    response_users = json.loads(users_r.text)
+    users_response = users_r.json()
+    users_ids = [member['user_id'] for member in users_response['users'] if member['email'] in module.params['members']]
 
-#    user_id = next(user["user_id"] for user in response_g["groups"] if group["description"] == module.params['groups'])
-    return(bearer_token)
+    return(bearer_token, users_ids)
 
 def create_group(module):
     get_token(module)
@@ -61,7 +61,7 @@ def create_group(module):
     r = requests.request("POST", g_url, data=payload, headers=headers)
     response = r.json()
 
-    m_payload = str(module.params['members'])
+    m_payload = str(users_ids)
     m_payload = m_payload.replace("'", '"')
 
     if r.status_code == 200:
@@ -78,6 +78,25 @@ def create_group(module):
             return module.exit_json(changed=False)
 
     return module.exit_json(msg=response)
+
+def delete_members(module):
+    get_token(module)
+    
+    headers = {
+        'Content-type': 'application/json',
+        'authorization': 'Bearer ' + bearer_token
+    }
+
+    groups_url = module.params['domain_ext'] + "/groups"
+    rg = requests.request("GET", groups_url, headers=headers)
+    response_g = rg.json()
+    g_id = next(group["_id"] for group in response_g["groups"] if group["description"] == module.params['groups'])
+    dg_url = groups_url + str("/" + g_id) + "/members"
+    dmg_payload = str(users_ids)
+    dmg_payload = dmg_payload.replace("'", '"')
+    dmg = requests.request("DELETE", dg_url, data=dmg_payload, headers=headers)
+    return module.exit_json(changed=False)
+    
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.urls import *
