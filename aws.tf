@@ -11,8 +11,8 @@ resource "aws_iam_saml_provider" "auth0_dev" {
 }
 
 ## IAM Role
-resource "aws_iam_role" "auth0_dev" {
-  name = "aws_auth0_role_dev"
+resource "aws_iam_role" "dev" {
+  name = "dev"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -34,9 +34,9 @@ resource "aws_iam_role" "auth0_dev" {
 EOF
 }
 
-resource "aws_iam_policy" "auth0_dev" {
-  name        = "auth0-policy-dev"
-  description = "auth0-policy-dev"
+resource "aws_iam_policy" "dev" {
+  name        = "dev"
+  description = "dev"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -58,10 +58,10 @@ resource "aws_iam_policy" "auth0_dev" {
 EOF
 }
 
-resource "aws_iam_policy_attachment" "auth0-attach-dev" {
-  name       = "auth0-attachment-dev"
-  roles      = ["${aws_iam_role.auth0_dev.name}"]
-  policy_arn = "${aws_iam_policy.auth0_dev.arn}"
+resource "aws_iam_policy_attachment" "dev" {
+  name       = "dev"
+  roles      = ["${aws_iam_role.dev.name}"]
+  policy_arn = "${aws_iam_policy.dev.arn}"
 }
 
 
