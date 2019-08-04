@@ -33,26 +33,11 @@ function (user, context, callback) {
     // Update the user object.
     user.groups = data.groups;
 
-    var group;
-    function groupCheck(value){
-      return value === group;
-    }
-
-    //group = 'aws_auth0_role_dev';
-    //if(user.groups.find(groupCheck) && context.clientName === "AWS"){
-    //  user.awsRole = 'arn:aws:iam::553748148142:role/aws_auth0_role_dev,arn:aws:iam::553748148142:saml-provider/auth0_dev';
-    //  user.awsRoleSession = user.name;
-    // context.samlConfiguration.mappings = {
-    //    'https://aws.amazon.com/SAML/Attributes/Role': 'awsRole',
-    //    'https://aws.amazon.com/SAML/Attributes/RoleSessionName': 'awsRoleSession'
-     // };
-    //}
-    
     if(context.clientID === "l337YRobtQ7DApz474y6g6bxU0yxXz7J"){
       var aws_groups = user.groups.filter(group => group.match('aws') !== null);
       aws_groups.forEach((g,i)=> {
-      var newEl = aws_groups[i].replace('aws_','');
-      aws_groups[i] = `arn:aws:iam::553748148142:role/${newEl},arn:aws:iam::553748148142:saml-provider/auth0_dev`;});
+      var role = aws_groups[i].replace('aws_','');
+      aws_groups[i] = `arn:aws:iam::553748148142:role/${role},arn:aws:iam::553748148142:saml-provider/auth0_dev`;});
       user.awsRole = aws_groups;
       user.awsRoleSession = user.name;
       context.samlConfiguration.mappings = {
