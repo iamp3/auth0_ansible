@@ -1,16 +1,4 @@
-# - name: test
-#   hosts: localhost
-#   tasks:
-#   - name: Include users from users.yml to users variable
-#     include_vars:
-#       file: vars/members.yml
-#       name: members
-#   - debug:
-#       msg: "member: {{ item.member }}, group: {{ item.group }}"
-#     with_items:
-#       - "{{ members.members }}"
-
-- name: more complex items to add several users
+- name: add users
   hosts: localhost
   tasks:
   - name: Include members
@@ -23,10 +11,28 @@
       domain_ext: 'https://dev-prom.us8.webtask.io/adf6e2f2b84784b57522e3b19dfc9201/api'
       client_id: 'vY2ixUH3W2FVAJ4u9YROelG2UfIzzI91'
       client_secret: '-JnFRoJ22gi5vitgvMW21MdZbRssFYjb7USbVMtxdeWeX8jy_08b8zUTrxiRKWpN'
-  #    token: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1rSkRSRUpETURoRU9ETXlNREV3UXpneE1EVTVOakF4UlROQk5ETXhPREZHT0ROR1JrRTVNQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1wcm9tLmF1dGgwLmNvbS8iLCJzdWIiOiJ2WTJpeFVIM1cyRlZBSjR1OVlST2VsRzJVZkl6ekk5MUBjbGllbnRzIiwiYXVkIjoidXJuOmF1dGgwLWF1dGh6LWFwaSIsImlhdCI6MTU2MzM4NTMxMCwiZXhwIjoxNTYzNDcxNzEwLCJhenAiOiJ2WTJpeFVIM1cyRlZBSjR1OVlST2VsRzJVZkl6ekk5MSIsInNjb3BlIjoicmVhZDp1c2VycyByZWFkOmFwcGxpY2F0aW9ucyByZWFkOmNvbm5lY3Rpb25zIHJlYWQ6Y29uZmlndXJhdGlvbiB1cGRhdGU6Y29uZmlndXJhdGlvbiByZWFkOmdyb3VwcyBjcmVhdGU6Z3JvdXBzIHVwZGF0ZTpncm91cHMgZGVsZXRlOmdyb3VwcyByZWFkOnJvbGVzIGNyZWF0ZTpyb2xlcyB1cGRhdGU6cm9sZXMgZGVsZXRlOnJvbGVzIHJlYWQ6cGVybWlzc2lvbnMgY3JlYXRlOnBlcm1pc3Npb25zIHVwZGF0ZTpwZXJtaXNzaW9ucyBkZWxldGU6cGVybWlzc2lvbnMgcmVhZDpyZXNvdXJjZS1zZXJ2ZXIgY3JlYXRlOnJlc291cmNlLXNlcnZlciB1cGRhdGU6cmVzb3VyY2Utc2VydmVyIGRlbGV0ZTpyZXNvdXJjZS1zZXJ2ZXIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.zqGhGKAifxLVMroC_YxIpvRojDBUW2Uw0dAZzeCxYoOQCdYI41_ikIr0RQkT7wsSjJAM_WT6vx5jCKpScbPJ092kSTSLfieWHNESKSq250LbqBpVMcXtzj-k-XJtEjOEI2ONyacPDe-3OCQCUcg8QsI7xHuNhqoAUYo-k6tJnIQJDPW8uVaI1TRAw17hqxU74mTxOutNmuykMS498emB4CwWKIBqlaMv4MGs23kMd7QBa7r__WA0qgTqBO4kwZrVziZMC8zloKXQ3QZBePj3Eyltv_iFelLIKhCuHBnH_da4y_7oMMUHBzocq-4JBHbE6R7Q66voVlgNKwcS503SLw'
       members: "{{ item.member }}"
       groups: "{{ item.group }}"
       state: present
+    with_items:
+      - "{{ members.members }}"
+
+- name: delete users
+  hosts: localhost
+  tasks:
+  - name: Include members
+    include_vars:
+      file: vars/members_delete.yml
+      name: members
+  - name: auth0_ext
+    auth0_ext:
+      domain_main: 'https://dev-prom.auth0.com'
+      domain_ext: 'https://dev-prom.us8.webtask.io/adf6e2f2b84784b57522e3b19dfc9201/api'
+      client_id: 'vY2ixUH3W2FVAJ4u9YROelG2UfIzzI91'
+      client_secret: '-JnFRoJ22gi5vitgvMW21MdZbRssFYjb7USbVMtxdeWeX8jy_08b8zUTrxiRKWpN'
+      members: "{{ item.member }}"
+      groups: "{{ item.group }}"
+      state: absent
     with_items:
       - "{{ members.members }}"
 

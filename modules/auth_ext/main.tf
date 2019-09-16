@@ -24,10 +24,6 @@ resource "auth0_client" "aws" {
         email = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
         name = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
       },
-      create_upn_claim = false,
-      passthrough_claims_with_no_mapping = true,
-      map_unknown_claims_as_is = false,
-      map_identities = false,
       name_identifier_format = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent",
       name_identifier_probes = [
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
@@ -35,6 +31,8 @@ resource "auth0_client" "aws" {
     }
   }
 }
+
+
 resource "auth0_rule" "aws" {
   count = "${var.application_type == "aws" ? 1 : 0}"
   name = "${var.application_name}"
