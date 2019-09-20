@@ -32,6 +32,12 @@ resource "auth0_client" "aws" {
   }
 }
 
+resource "null_resource" "saml_metadata_aws" {
+  provisioner "local-exec" {
+    command = "wget -O saml_metadata_${var.application_name}.xml https://dev-prom.auth0.com/samlp/metadata/${auth0_client.aws.id}"
+    interpreter = ["PowerShell"]
+  }
+}
 
 resource "auth0_rule" "aws" {
   count = "${var.application_type == "aws" ? 1 : 0}"
@@ -137,6 +143,14 @@ resource "auth0_client" "jenkins" {
     }
   }
 }
+
+resource "null_resource" "saml_metadata_jenkins" {
+  provisioner "local-exec" {
+    command = "wget -O saml_metadata_${var.application_name}.xml https://dev-prom.auth0.com/samlp/metadata/${auth0_client.jenkins.id}"
+    interpreter = ["PowerShell"]
+  }
+}
+
 
 resource "auth0_rule" "jenkins" {
   count = "${var.application_type == "jenkins" ? 1 : 0}"
