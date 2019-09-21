@@ -17,6 +17,7 @@ module "aws" {
     aws_account_id = "553748148142"
     application_type = "aws"
     application_name = "aws"
+    domain_name = "dev-prom"
 }
 
 module "jenkins" {
@@ -25,4 +26,5 @@ module "jenkins" {
     jenkins_url = "http://ec2-3-82-100-188.compute-1.amazonaws.com"
     application_type = "jenkins"
     application_name = "jenkins"
+    domain_name = "dev-prom"
 }

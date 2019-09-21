@@ -34,7 +34,7 @@ resource "auth0_client" "aws" {
 
 resource "null_resource" "saml_metadata_aws" {
   provisioner "local-exec" {
-    command = "wget -O saml_metadata_${var.application_name}.xml https://dev-prom.auth0.com/samlp/metadata/${auth0_client.aws.id}"
+    command = "wget -O saml_metadata_${var.application_name}.xml https://${var.domain_name}.auth0.com/samlp/metadata/${auth0_client.aws.id}"
     interpreter = ["PowerShell"]
   }
 }
@@ -146,7 +146,7 @@ resource "auth0_client" "jenkins" {
 
 resource "null_resource" "saml_metadata_jenkins" {
   provisioner "local-exec" {
-    command = "wget -O saml_metadata_${var.application_name}.xml https://dev-prom.auth0.com/samlp/metadata/${auth0_client.jenkins.id}"
+    command = "wget -O saml_metadata_${var.application_name}.xml https://${var.domain_name}.auth0.com/samlp/metadata/${auth0_client.jenkins.id}"
     interpreter = ["PowerShell"]
   }
 }

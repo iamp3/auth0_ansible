@@ -1,3 +1,7 @@
+variable "domain_name" {
+  description = "main domain name on your account"
+}
+
 variable "extension_url" {
   description = "authorization_extension api url"
 }
